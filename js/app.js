@@ -287,3 +287,11 @@ document.querySelectorAll("[data-cur]").forEach(f=>{
   let frame=0,x=0,y=0;
   f.addEventListener("mousemove",e=>{x=e.clientX;y=e.clientY;if(!frame)frame=requestAnimationFrame(()=>{pcur.style.translate=`${x}px ${y}px`;frame=0})});
 });
+
+/* mobile menu + hide logo on scroll */
+const burger=document.getElementById("burger");
+const setMenu=o=>{document.body.classList.toggle("menu-open",o);burger.setAttribute("aria-expanded",o)};
+burger.addEventListener("click",()=>setMenu(!document.body.classList.contains("menu-open")));
+document.getElementById("mainnav").addEventListener("click",()=>setMenu(false));
+addEventListener("keydown",e=>{if(e.key==="Escape")setMenu(false)});
+addEventListener("scroll",()=>document.body.classList.toggle("scrolled",scrollY>40),{passive:true});

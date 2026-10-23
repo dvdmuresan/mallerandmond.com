@@ -254,8 +254,8 @@ body[data-view="contact"] .foot{margin-top:0;min-height:calc(100svh - 120px);pad
   .intro .ttl,.intro .meta{grid-column:1/-1}
 }
 @media (max-width:700px){
-  .field{grid-template-columns:repeat(3,minmax(0,1fr))}.tile{--S:24vw}.home{--mk:calc(100vw - 32px)}.bigmark{margin-top:52px;margin-bottom:24px}
-  .logo svg{width:188px}
+  .field{grid-template-columns:repeat(3,minmax(0,1fr))}.tile{--S:24vw}.home{--mk:calc(100vw - 32px)}.bigmark{width:calc(var(--mk) * .6);margin-top:0;margin-bottom:24px}
+  .logo svg{width:141px}
   .grid{grid-template-columns:1fr}
   .gpair{padding:20px}
   .shots{grid-template-columns:1fr}
@@ -267,4 +267,22 @@ body[data-view="contact"] .foot{margin-top:0;min-height:calc(100svh - 120px);pad
   .bgwrap::after{animation:none!important}
   .curtain svg,.curtain.first #introMark path{animation:none!important;opacity:1;transform:none}
   .tile img,.pcur,.site-link .arr{transition:none!important}
+}
+
+/* mobile header: sticky, burger opens a blurred full-screen menu */
+.burger{display:none}
+@media (max-width:700px){
+  .top{position:fixed!important}
+  .logo{transition:opacity .3s}
+  body.scrolled .logo{opacity:0;pointer-events:none}
+  .burger{all:unset;position:relative;z-index:2;pointer-events:auto;display:grid;place-content:center;gap:5px;width:44px;height:40px;background:rgba(236,236,236,.78);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border-radius:var(--r);cursor:pointer}
+  .burger span{display:block;width:18px;height:2px;background:#111;transition:transform .25s}
+  .menu-open .burger span:first-child{transform:translateY(3.5px) rotate(45deg)}
+  .menu-open .burger span:last-child{transform:translateY(-3.5px) rotate(-45deg)}
+  .nav{position:fixed;inset:0;z-index:1;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:rgba(255,255,255,.35);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .3s,visibility .3s}
+  .menu-open .nav{opacity:1;visibility:visible;pointer-events:auto}
+  .nav a{background:none!important;-webkit-backdrop-filter:none;backdrop-filter:none;color:#111!important;font-size:clamp(40px,13vw,64px);letter-spacing:-.03em;padding:0 8px}
+  .nav a[aria-current="page"]{text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:6px}
+  .menu-open .logo{opacity:1;pointer-events:auto;position:relative;z-index:2}
+  body.menu-open{overflow:hidden}
 }
