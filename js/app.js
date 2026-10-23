@@ -13,6 +13,46 @@ const S = {
 };
 
 const SN={"Maller":"MALLER STUDIO","Mond":"MOND : STUDIO","Maller & Mond":"MALLER STUDIO × MOND : STUDIO"};
+/* Let the browser choose an existing thumbnail, a 960px copy, or the original. */
+const thumbPath=src=>src.replace(/\/([^/]+)\.(?:jpg|webp)$/, "/thumbs/$1.jpg");
+function imageAttrs(src,sizes,eager=false){
+  const info=IMAGES[src];
+  const sources=info?[info.thumb,info.medium,{src,w:info.w}].filter(Boolean):[];
+  return `src="${src}"${info?` width="${info.w}" height="${info.h}" srcset="${sources.map(s=>`${s.src} ${s.w}w`).join(",")}" sizes="${sizes}"`:""} decoding="async" loading="${eager?"eager":"lazy"}"${eager?' fetchpriority="high"':""}`;
+}
+const WORK_SIZES="(max-width: 700px) calc(100vw - 32px), calc((100vw - 60px) / 3)";
+/* Videos fetch only near the viewport and play only while visible. */
+const autoVideo=!matchMedia("(prefers-reduced-motion: reduce)").matches&&!navigator.connection?.saveData;
+let videoLoader,videoPlayer;
+function playVideo(video){
+  if(autoVideo&&!document.hidden&&video.dataset.visible==="true")video.play().catch(()=>{});
+}
+function syncMedia(view){
+  videoLoader?.disconnect();videoPlayer?.disconnect();
+  document.querySelectorAll("video").forEach(v=>{v.pause();delete v.dataset.visible});
+  const videos=[...view.querySelectorAll("video")];
+  const load=v=>{
+    if(v.dataset.poster)v.poster=v.dataset.poster;
+    if(!v.getAttribute("src")){
+      v.src=v.dataset.src;v.preload=autoVideo?"metadata":"none";
+      if(autoVideo)v.load();
+    }
+  };
+  if(!("IntersectionObserver" in window)){
+    videos.forEach(v=>{load(v);v.controls=true});return;
+  }
+  videoLoader=new IntersectionObserver(entries=>entries.forEach(({target,isIntersecting})=>{
+    if(isIntersecting){load(target);videoLoader.unobserve(target)}
+  }),{rootMargin:"400px 0px"});
+  videoPlayer=new IntersectionObserver(entries=>entries.forEach(({target,isIntersecting})=>{
+    target.dataset.visible=String(isIntersecting);
+    if(isIntersecting){load(target);playVideo(target)}else target.pause();
+  }),{threshold:.05});
+  videos.forEach(v=>{v.controls=!autoVideo;videoLoader.observe(v);videoPlayer.observe(v)});
+}
+document.addEventListener("visibilitychange",()=>document.querySelectorAll("video").forEach(v=>{
+  if(document.hidden)v.pause();else playVideo(v);
+}));
 /* ---------------- placeholder generator ---------------- */
 function rng(seed){let s=seed>>>0||1;return()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296}}
 function hash(str){let h=2166136261;for(const c of str){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
@@ -77,10 +117,12 @@ function isDark(hex){const n=parseInt(hex.slice(1),16),f=v=>{v/=255;return v<=.0
 function paintHome(color){const nb=bgs[bgi^1];nb.style.backgroundColor=color;nb.classList.add("on");bgs[bgi].classList.remove("on");bgi^=1;
   document.body.classList.toggle("on-dark",!color||isDark(color))}
 /* projects still in progress: edit this list (shown under "Working on right now" at the bottom of Work and About) */
-const NOW=["Project in progress 01","Project in progress 02","Project in progress 03","Project in progress 04","Project in progress 05"];
+const CLIENTS=[["Marty Restaurants","Romania"],["Liszt Ferenc Music Academy","Budapest"],["Olivo Bistro","Romania"],["House of Music","Budapest"],["Olivo Coffee Culture","Romania"],["Narcoffee","Romania"],["GoHome","Netherlands"],["Hirsch-Porozel","Romania"]];
+const NOW=[["Ia loc","Romania"],["IOTA Association","Romania"],["Megamontaj","Romania"],["Fufu Bakerhouse","Netherlands"]];
+const li=([n,w])=>`<li>${n}, <span class="hl-where">${w}</span></li>`;
 function renderLists(){
-  document.querySelectorAll(".hl-projects").forEach(pl=>pl.innerHTML=P.slice(0,14).map(p=>`<li><a href="#${p.slug}" data-route="${p.slug}">${p.title}</a></li>`).join(""));
-  document.querySelectorAll(".hl-now").forEach(nl=>nl.innerHTML=NOW.map(n=>`<li>${n}</li>`).join(""));
+  document.querySelectorAll(".hl-projects").forEach(pl=>pl.innerHTML=CLIENTS.map(li).join(""));
+  document.querySelectorAll(".hl-now").forEach(nl=>nl.innerHTML=NOW.map(li).join(""));
 }
 function setHome(i){
   if(i===homeI)return;homeI=i;
@@ -90,8 +132,7 @@ function setHome(i){
 function renderHome(){
   /* 18 tiles in a 6×3 grid: projects shuffled and repeated, each repeat showing a different image from that project */
   const TILES=18,shuffle=a=>{for(let k=a.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[a[k],a[j]]=[a[j],a[k]]}return a};
-  const thumb=s=>s.replace(/\/([^/]+\.jpg)$/,"/thumbs/$1");
-  const pools=P.map(p=>shuffle((p.media||[]).map(m=>m.video?m.poster:m.src).filter(Boolean).map(thumb)));
+  const pools=P.map(p=>shuffle((p.media||[]).map(m=>m.video?m.poster:m.src).filter(Boolean).map(thumbPath)));
   const tiles=[];let round=0;
   while(tiles.length<TILES&&round<40){
     const order=shuffle(P.map((_,i)=>i));
@@ -100,7 +141,7 @@ function renderHome(){
     round++;
   }
   field.style.setProperty("--cols",6);
-  field.innerHTML=tiles.map(([i,src])=>{const p=P[i];return `<a class="tile" href="#${p.slug}" data-route="${p.slug}" data-i="${i}" aria-label="${p.title}"><img alt="" src="${src}"></a>`}).join("");
+  field.innerHTML=tiles.map(([i,src])=>{const p=P[i];return `<a class="tile" href="#${p.slug}" data-route="${p.slug}" data-i="${i}" aria-label="${p.title}"><img alt="" src="${src}" decoding="async"></a>`}).join("");
   const pick=e=>{const a=e.target.closest(".tile");if(a)setHome(+a.dataset.i)};
   field.addEventListener("mouseover",pick);field.addEventListener("focusin",pick);
   field.addEventListener("mouseleave",()=>setHome(-1));
@@ -110,20 +151,21 @@ function renderHome(){
 /* ---------------- work ---------------- */
 const grid=document.getElementById("grid");
 function renderGrid(){
-  const card=([i,ar],w)=>{const p=P[i];
+  const card=([i,ar],w,eager=false)=>{const p=P[i];
     return `<a class="card" href="#${p.slug}" data-route="${p.slug}" data-studio="${p.studio}" style="--ar:${ar}">
-      <div class="img">${p.coverVideo?`<video src="${p.coverVideo}" poster="${p.coverPoster||coverSrc(i,ar,i%5,w)}" autoplay muted loop playsinline preload="metadata" aria-label="${p.title}"></video>`:`<img alt="${p.title}" loading="lazy" src="${coverSrc(i,ar,i%5,w)}">`}</div>
+      <div class="img">${p.coverVideo?`<video data-src="${p.coverVideo}" data-poster="${p.coverPoster||coverSrc(i,ar,i%5,w)}" muted loop playsinline preload="none" aria-label="${p.title}"></video>`:`<img alt="${p.title}" ${imageAttrs(coverSrc(i,ar,i%5,w),WORK_SIZES,eager)}>`}</div>
       <div class="cap"><span class="t">${p.title}</span><span class="s">${p.services}</span></div>
     </a>`};
-  const col=list=>`<div class="gcol">${list.map(x=>x.pair?`<div class="gpair">${x.pair.map(c=>card(c,520)).join("")}</div>`:card(x)).join("")}</div>`;
+  const col=list=>`<div class="gcol">${list.map((x,n)=>x.pair?`<div class="gpair">${x.pair.map(c=>card(c,520)).join("")}</div>`:card(x,undefined,n===0)).join("")}</div>`;
   grid.innerHTML=W.cols.map(col).join("");
 }
 
 /* ---------------- project ---------------- */
 /* real media: landscape pieces run full width; portraits between them are split into two balanced columns */
 function mediaEl(m,n,title){
-  return m.video?`<figure class="shot" style="--ar:${m.w}/${m.h}"><video src="${m.src}"${m.poster?` poster="${m.poster}"`:""} autoplay muted loop playsinline preload="metadata" aria-label="${title}, video ${n}"></video></figure>`
-    :`<figure class="shot" style="--ar:${m.w}/${m.h}"><img src="${m.src}" alt="${title}, image ${n}" loading="lazy"></figure>`;
+  const sizes=m.w/m.h>1.25?"(max-width: 900px) calc(100vw - 32px), calc(70vw - 38px)":"(max-width: 700px) calc(100vw - 32px), (max-width: 900px) calc((100vw - 42px) / 2), calc((70vw - 48px) / 2)";
+  return m.video?`<figure class="shot" style="--ar:${m.w}/${m.h}"><video data-src="${m.src}"${m.poster?` data-poster="${m.poster}"`:""} width="${m.w}" height="${m.h}" muted loop playsinline preload="none" aria-label="${title}, video ${n}"></video></figure>`
+    :`<figure class="shot" style="--ar:${m.w}/${m.h}"><img ${imageAttrs(m.src,sizes,n<=2)} alt="${title}, image ${n}"></figure>`;
 }
 function realShots(p){
   let out="",run=[],n=0;
@@ -142,8 +184,7 @@ function renderProject(p){
   const pal=()=>j%2?[p.pal[1],p.pal[0],p.pal[2]]:p.pal;
   const fig=(ar,w)=>{j++;return `<figure class="shot" style="--ar:${ar}"><img alt="${p.title}, image ${j} (placeholder)" src="${art(p.slug+"-"+j,ar,pal(),p.title,undefined,w)}"></figure>`};
   const col=list=>`<div class="mcol">${list.map(x=>typeof x==="string"?fig(x):`<div class="pair box">${x.pair.map(a=>fig(a,520)).join("")}</div>`).join("")}</div>`;
-  let shots=col(S.left)+col(S.right)+`<div class="full">${fig(S.full,1600)}</div>`;
-  if(p.media)shots=realShots(p);
+  const shots=p.media?realShots(p):col(S.left)+col(S.right)+`<div class="full">${fig(S.full,1600)}</div>`;
   vp.innerHTML=`<div class="project">
     <aside class="info${isDark(p.pal[0])?" dark":""}" id="pinfo" style="--pc:${p.pal[0]}">
       <div class="itop"><a class="ibtn" href="#work" data-route="work">← All work</a><a class="ibtn" href="#contact" data-route="contact">Get in touch</a></div>
@@ -158,7 +199,7 @@ function renderProject(p){
         ${p.team?`<div><dt>Team</dt><dd>${p.team}</dd></div>`:""}
       </dl>
       <div class="ibody">
-        <p class="desc">${p.desc}</p>
+        ${p.approach?`<span class="dlbl">Project</span>`:""}<p class="desc">${p.desc}</p>${p.approach?`<span class="dlbl">Approach</span><p class="desc">${p.approach}</p>`:""}
         <button class="ibtn" type="button" aria-expanded="false" aria-label="Show full description" onclick="const i=document.getElementById('pinfo');const o=i.classList.toggle('open');this.textContent=o?'−':'+';this.setAttribute('aria-expanded',o)">+</button>
       </div>
       <div class="pager"><a class="ibtn" href="#${prev.slug}" data-route="${prev.slug}">‹ ${prev.title}</a><a class="ibtn" href="#${next.slug}" data-route="${next.slug}">${next.title} ›</a></div>
@@ -171,58 +212,78 @@ function renderProject(p){
 /* ---------------- routing + curtain ---------------- */
 const curtain=document.getElementById("curtain");
 const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
-let current=null,busy=false;
+let current=null,busy=false,queuedRoute=null;
+const renderedViews=new Set();
 function show(route){
   const p=P.find(x=>x.slug===route);
   const key=p?"project":(["work","about","contact"].includes(route)?route:"home");
+  if(!renderedViews.has(key)){
+    if(key==="home")renderHome();
+    if(key==="work")renderGrid();
+    renderedViews.add(key);
+  }
   document.body.dataset.view=key;
   document.querySelectorAll(".view").forEach(v=>v.hidden=v.id!=="v-"+key);
-  if(p) renderProject(p);
+  if(p&&vp.dataset.project!==p.slug){renderProject(p);vp.dataset.project=p.slug}
   document.querySelectorAll(".nav a").forEach(a=>{const on=a.dataset.route===(p?"work":key);on?a.setAttribute("aria-current","page"):a.removeAttribute("aria-current")});
   document.title=p?`${p.title} — MALLER STUDIO & MOND : STUDIO`:"MALLER STUDIO & MOND : STUDIO";
   document.getElementById("toplogo").style.visibility=key==="home"?"hidden":"visible";
   window.scrollTo(0,0);current=route||"home";
+  syncMedia(document.getElementById("v-"+key));
 }
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 const CUR={home:["var(--c-yellow)","#111"],work:["var(--c-maroon)","var(--c-blush)"],project:["var(--c-maroon)","var(--c-blush)"],about:["var(--c-red)","#111"],contact:["var(--c-yellow)","#111"]};
 function viewOf(route){return P.find(x=>x.slug===route)?"project":(["work","about","contact"].includes(route)?route:"home")}
 function paint(route){const [bg,ink]=CUR[viewOf(route)];curtain.style.setProperty("--cur-bg",bg);curtain.style.setProperty("--cur-ink",ink)}
 async function go(route,push=true){
-  if(route===current||busy) return; busy=true;
+  route=P.some(p=>p.slug===route)||["home","work","about","contact"].includes(route)?route:"home";
+  if(busy){queuedRoute={route,push};return}
+  if(route===current)return;
+  busy=true;
   if(push){try{history.pushState(null,"","#"+route)}catch(e){}}
-  if(reduce){show(route);busy=false;return}
-  curtain.classList.remove("up","first","done");curtain.classList.add("down");paint(route);
-  const lg=curtain.querySelector("svg");lg.style.animation="none";void lg.offsetWidth;lg.style.animation="";
-  void curtain.offsetHeight;
-  curtain.classList.remove("down");
-  await wait(820); show(route); await wait(120);
-  curtain.classList.add("up");
-  await wait(900); busy=false;
+  try{
+    if(reduce){show(route);curtain.classList.add("up");return}
+    curtain.classList.remove("up","first","done");curtain.classList.add("down");paint(route);
+    const lg=curtain.querySelector("svg");lg.style.animation="none";void lg.offsetWidth;lg.style.animation="";
+    void curtain.offsetHeight;
+    curtain.classList.remove("down");
+    await wait(820);show(route);await wait(120);
+    curtain.classList.add("up");
+    await wait(900);
+  }finally{
+    busy=false;
+    if(queuedRoute){const next=queuedRoute;queuedRoute=null;go(next.route,next.push)}
+  }
 }
-document.addEventListener("click",e=>{const a=e.target.closest("[data-route]");if(!a)return;e.preventDefault();go(a.dataset.route)});
+document.addEventListener("click",e=>{const a=e.target.closest("[data-route]");if(!a||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;e.preventDefault();go(a.dataset.route)});
 addEventListener("popstate",()=>go((location.hash||"#home").slice(1),false));
+addEventListener("hashchange",()=>go((location.hash||"#home").slice(1),false));
 
 
 /* ---------------- boot: loader slides up ---------------- */
 (async()=>{
   document.body.classList.add("locked");
-  try{await Promise.race([document.fonts.load('16px DaVinci').then(()=>document.fonts.ready),wait(1500)])}catch(e){}
   /* first-load logo (stacked mark): letters rise one by one, M-A-L-L-E-R, &, M-O-N-D */
   const im=document.getElementById("introMark"),src=[...document.querySelectorAll("#mark-stack path")];
   const order=[[0],[1],[2],[3],[4],[5],[6],[7],[8],[9],[10]];
   order.forEach((grp,k)=>grp.forEach(idx=>{const p=src[idx].cloneNode();p.style.setProperty("--d",(120+k*70)+"ms");im.appendChild(p)}));
-  renderHome();renderLists();renderGrid();
+  renderLists();
   show((location.hash||"#home").slice(1));
+  busy=true;
   await wait(reduce?0:120+order.length*70+750);
   curtain.classList.add("done");
   await wait(reduce?0:650);
   curtain.classList.add("up");
+  await wait(reduce?0:900);
   document.body.classList.remove("locked");
+  busy=false;
+  if(queuedRoute){const next=queuedRoute;queuedRoute=null;go(next.route,next.push)}
 })();
 /* portrait hover cursor */
 const pcur=document.getElementById("pcur");
 document.querySelectorAll("[data-cur]").forEach(f=>{
   f.addEventListener("mouseenter",()=>{pcur.innerHTML=f.dataset.cur;pcur.className="pcur on "+f.dataset.shape});
   f.addEventListener("mouseleave",()=>pcur.classList.remove("on"));
-  f.addEventListener("mousemove",e=>{pcur.style.left=e.clientX+"px";pcur.style.top=e.clientY+"px"});
+  let frame=0,x=0,y=0;
+  f.addEventListener("mousemove",e=>{x=e.clientX;y=e.clientY;if(!frame)frame=requestAnimationFrame(()=>{pcur.style.translate=`${x}px ${y}px`;frame=0})});
 });
