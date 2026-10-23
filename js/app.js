@@ -1,0 +1,228 @@
+/* ---------------- data ---------------- */
+/* project data lives in js/projects.js */
+/* work mosaic: two packed columns; [project index, aspect] or {pair:[[i,ar],[i,ar]]} = two small pieces on a grey ground */
+const W = {
+  cols:[[[0,"4/5"],[3,"1/1"],[5,"4/5"]],[[2,"4/5"],[7,"4/5"],[8,"1/1"]],[[6,"16/9"],[1,"1/1"],[4,"4/5"]]]
+};
+/* project mosaic: two packed columns of different heights, plus a full-width closer.
+   Strings are aspect ratios; {pair} = two small pieces set on a grey ground. */
+const S = {
+  left:["16/9","16/9",{pair:["4/5","4/5"]},"4/5"],
+  right:["5/6","3/2","4/5","16/10"],
+  full:"21/9"
+};
+
+const SN={"Maller":"MALLER STUDIO","Mond":"MOND : STUDIO","Maller & Mond":"MALLER STUDIO × MOND : STUDIO"};
+/* ---------------- placeholder generator ---------------- */
+function rng(seed){let s=seed>>>0||1;return()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296}}
+function hash(str){let h=2166136261;for(const c of str){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
+function ratio(ar){const [a,b]=ar.split("/").map(Number);return a/b}
+const cache=new Map();
+/* real cover if the project has one, otherwise a generated placeholder */
+const coverSrc=(i,ar,kind,w)=>P[i].cover||art(P[i].slug+"-cover",ar,P[i].pal,P[i].title,kind,w);
+function art(key,ar,pal,label,kindHint,W=1100){
+  const k=key+ar+W; if(cache.has(k)) return cache.get(k);
+  const H=Math.round(W/ratio(ar));
+  const c=document.createElement("canvas");c.width=W;c.height=H;
+  const g=c.getContext("2d"),r=rng(hash(key+ar));
+  const [bg,fg,ac]=pal;
+  g.fillStyle=bg;g.fillRect(0,0,W,H);
+  const kind=kindHint ?? Math.floor(r()*5);
+  const M=Math.min(W,H);
+  const sans=(w,s)=>`${w} ${s}px "Suisse BP Intl", "Helvetica Neue", Arial, sans-serif`;
+  const serif=s=>sans(600,s);
+  if(kind===0){
+    let ph=H*.78, pw=ph/1.414; if(pw>W*.6){pw=W*.6;ph=pw*1.414}
+    const x=(W-pw)/2+(r()-.5)*W*.12, y=(H-ph)/2;
+    g.save();g.shadowColor="rgba(0,0,0,.25)";g.shadowBlur=W*.035;g.shadowOffsetY=W*.016;
+    g.fillStyle=fg;g.fillRect(x,y,pw,ph);g.restore();
+    g.fillStyle=ac;g.beginPath();g.arc(x+pw*(.3+r()*.4),y+ph*.42,pw*.32,0,7);g.fill();
+    g.fillStyle=bg;g.font=sans(600,pw*.13);g.fillText(label.split(" ")[0],x+pw*.07,y+ph*.9,pw*.86);
+    g.font=serif(pw*.05);g.fillText("2026, Cluj-Napoca",x+pw*.07,y+ph*.1);
+  } else if(kind===1){
+    let yy=0;while(yy<H){const h=H*(.04+r()*.16);g.fillStyle=r()>.55?ac:(r()>.5?fg:bg);g.fillRect(0,yy,W,h);yy+=h+H*.02}
+    g.fillStyle=fg;g.fillRect(W*.06,H*.32,W*.88,H*.36);
+    g.fillStyle=bg;g.font=sans(600,Math.min(H*.2,W*.12));g.fillText(label,W*.1,H*.58,W*.8);
+  } else if(kind===2){
+    const n=8+Math.floor(r()*6),cell=W/n;
+    for(let i=0;i<n;i++)for(let j=0;j*cell<H+cell;j++){
+      const v=r();g.fillStyle=v>.82?ac:fg;g.beginPath();
+      g.arc(i*cell+cell/2,j*cell+cell/2,cell*(v>.82?.42:.12+v*.18),0,7);g.fill();}
+  } else if(kind===3){
+    g.fillStyle=fg;g.font=sans(600,M*1.05);g.textAlign="center";
+    g.fillText(label[0],W*.52,H*.5+M*.38);
+    g.textAlign="left";g.fillStyle=ac;g.fillRect(W*.06,H*.08,M*.14,M*.14);
+    g.fillStyle=fg;g.font=serif(M*.05);g.fillText(label,W*.06,H*.94);
+  } else {
+    for(let i=0;i<4;i++){
+      const cw=M*(.42+r()*.12),ch=cw*.58,x=W*(.18+r()*.5)-cw/2+W*.1,y=H*(.2+r()*.55)-ch/2;
+      g.save();g.translate(x+cw/2,y+ch/2);g.rotate((r()-.5)*.6);
+      g.shadowColor="rgba(0,0,0,.22)";g.shadowBlur=W*.022;g.shadowOffsetY=W*.01;
+      g.fillStyle=[fg,ac,"#ffffff",fg][i];g.fillRect(-cw/2,-ch/2,cw,ch);g.shadowColor="transparent";
+      g.fillStyle=i===0||i===3?bg:fg;g.font=sans(600,ch*.16);g.fillText(label,-cw/2+ch*.12,ch/2-ch*.14,cw*.85);
+      g.restore();}
+  }
+  const N=Math.round(W*H/90);for(let i=0;i<N;i++){g.fillStyle=r()>.5?"rgba(255,255,255,.05)":"rgba(0,0,0,.05)";g.fillRect(r()*W,r()*H,1.4,1.4)}
+  const url=c.toDataURL("image/jpeg",.82);cache.set(k,url);return url;
+}
+
+/* ---------------- home: all projects spread out; hover paints the page in the project's colour ---------------- */
+const field=document.getElementById("field"),hoverline=document.getElementById("hoverline"),defaultLine=hoverline.textContent;
+const bgs=[document.getElementById("bgA"),document.getElementById("bgB")];let bgi=0,homeI=-1;
+const HR=["4/5","3/2","1/1","5/4","1/1","4/5","4/5","3/2","3/2","1/1","3/2","4/5","3/2","1/1","4/5","4/5","1/1","5/4"];
+const thumbSrc=i=>P[i].cover||art(P[i].slug+"-thumb",HR[i%HR.length],P[i].pal,P[i].title,(i*3)%5,520);
+/* black or white text, whichever contrasts more with a colour (switch point ≈ 0.18 relative luminance) */
+function isDark(hex){const n=parseInt(hex.slice(1),16),f=v=>{v/=255;return v<=.04045?v/12.92:((v+.055)/1.055)**2.4};
+  return .2126*f(n>>16&255)+.7152*f(n>>8&255)+.0722*f(n&255)<.18}
+function paintHome(color){const nb=bgs[bgi^1];nb.style.backgroundColor=color;nb.classList.add("on");bgs[bgi].classList.remove("on");bgi^=1;
+  document.body.classList.toggle("on-dark",!color||isDark(color))}
+/* projects still in progress: edit this list (shown under "Working on right now" at the bottom of Work and About) */
+const NOW=["Project in progress 01","Project in progress 02","Project in progress 03","Project in progress 04","Project in progress 05"];
+function renderLists(){
+  document.querySelectorAll(".hl-projects").forEach(pl=>pl.innerHTML=P.slice(0,14).map(p=>`<li><a href="#${p.slug}" data-route="${p.slug}">${p.title}</a></li>`).join(""));
+  document.querySelectorAll(".hl-now").forEach(nl=>nl.innerHTML=NOW.map(n=>`<li>${n}</li>`).join(""));
+}
+function setHome(i){
+  if(i===homeI)return;homeI=i;
+  if(i<0){hoverline.textContent=defaultLine;return}
+  hoverline.textContent=P[i].title;
+}
+function renderHome(){
+  /* 18 tiles in a 6×3 grid: projects shuffled and repeated, each repeat showing a different image from that project */
+  const TILES=18,shuffle=a=>{for(let k=a.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[a[k],a[j]]=[a[j],a[k]]}return a};
+  const thumb=s=>s.replace(/\/([^/]+\.jpg)$/,"/thumbs/$1");
+  const pools=P.map(p=>shuffle((p.media||[]).map(m=>m.video?m.poster:m.src).filter(Boolean).map(thumb)));
+  const tiles=[];let round=0;
+  while(tiles.length<TILES&&round<40){
+    const order=shuffle(P.map((_,i)=>i));
+    if(tiles.length&&order[0]===tiles[tiles.length-1])order.push(order.shift());
+    for(const i of order){if(tiles.length>=TILES)break;const src=pools[i][round%Math.max(pools[i].length,1)]||thumbSrc(i);tiles.push([i,src])}
+    round++;
+  }
+  field.style.setProperty("--cols",6);
+  field.innerHTML=tiles.map(([i,src])=>{const p=P[i];return `<a class="tile" href="#${p.slug}" data-route="${p.slug}" data-i="${i}" aria-label="${p.title}"><img alt="" src="${src}"></a>`}).join("");
+  const pick=e=>{const a=e.target.closest(".tile");if(a)setHome(+a.dataset.i)};
+  field.addEventListener("mouseover",pick);field.addEventListener("focusin",pick);
+  field.addEventListener("mouseleave",()=>setHome(-1));
+  document.body.classList.add("on-dark");field.addEventListener("focusout",e=>{if(!field.contains(e.relatedTarget))setHome(-1)});
+}
+
+/* ---------------- work ---------------- */
+const grid=document.getElementById("grid");
+function renderGrid(){
+  const card=([i,ar],w)=>{const p=P[i];
+    return `<a class="card" href="#${p.slug}" data-route="${p.slug}" data-studio="${p.studio}" style="--ar:${ar}">
+      <div class="img">${p.coverVideo?`<video src="${p.coverVideo}" poster="${p.coverPoster||coverSrc(i,ar,i%5,w)}" autoplay muted loop playsinline preload="metadata" aria-label="${p.title}"></video>`:`<img alt="${p.title}" loading="lazy" src="${coverSrc(i,ar,i%5,w)}">`}</div>
+      <div class="cap"><span class="t">${p.title}</span><span class="s">${p.services}</span></div>
+    </a>`};
+  const col=list=>`<div class="gcol">${list.map(x=>x.pair?`<div class="gpair">${x.pair.map(c=>card(c,520)).join("")}</div>`:card(x)).join("")}</div>`;
+  grid.innerHTML=W.cols.map(col).join("");
+}
+
+/* ---------------- project ---------------- */
+/* real media: landscape pieces run full width; portraits between them are split into two balanced columns */
+function mediaEl(m,n,title){
+  return m.video?`<figure class="shot" style="--ar:${m.w}/${m.h}"><video src="${m.src}"${m.poster?` poster="${m.poster}"`:""} autoplay muted loop playsinline preload="metadata" aria-label="${title}, video ${n}"></video></figure>`
+    :`<figure class="shot" style="--ar:${m.w}/${m.h}"><img src="${m.src}" alt="${title}, image ${n}" loading="lazy"></figure>`;
+}
+function realShots(p){
+  let out="",run=[],n=0;
+  const solo=x=>`<div class="full solo">${x.el}</div>`;
+  const flush=()=>{if(!run.length)return;const c=[[],[]],h=[0,0];
+    const last=run.length%2?run.pop():null;
+    run.forEach(x=>{const k=h[0]<=h[1]?0:1;c[k].push(x.el);h[k]+=x.m.h/x.m.w});
+    if(run.length)out+=c.map(col=>`<div class="mcol">${col.join("")}</div>`).join("");if(last)out+=solo(last);run=[]};
+  p.media.forEach(m=>{n++;const el=mediaEl(m,n,p.title);if(m.w/m.h>1.25){flush();out+=`<div class="full">${el}</div>`}else run.push({m,el})});
+  flush();return out;
+}
+const vp=document.getElementById("v-project");
+function renderProject(p){
+  const i=P.indexOf(p),prev=P[(i-1+P.length)%P.length],next=P[(i+1)%P.length];
+  let j=0;
+  const pal=()=>j%2?[p.pal[1],p.pal[0],p.pal[2]]:p.pal;
+  const fig=(ar,w)=>{j++;return `<figure class="shot" style="--ar:${ar}"><img alt="${p.title}, image ${j} (placeholder)" src="${art(p.slug+"-"+j,ar,pal(),p.title,undefined,w)}"></figure>`};
+  const col=list=>`<div class="mcol">${list.map(x=>typeof x==="string"?fig(x):`<div class="pair box">${x.pair.map(a=>fig(a,520)).join("")}</div>`).join("")}</div>`;
+  let shots=col(S.left)+col(S.right)+`<div class="full">${fig(S.full,1600)}</div>`;
+  if(p.media)shots=realShots(p);
+  vp.innerHTML=`<div class="project">
+    <aside class="info${isDark(p.pal[0])?" dark":""}" id="pinfo" style="--pc:${p.pal[0]}">
+      <div class="itop"><a class="ibtn" href="#work" data-route="work">← All work</a><a class="ibtn" href="#contact" data-route="contact">Get in touch</a></div>
+      <dl class="ihead">
+        <div><dt>Project</dt><dd>${p.title}</dd></div>
+        <div><dt>Year</dt><dd>${p.year}</dd></div>
+        ${p.category?`<div><dt>Category</dt><dd>${p.category}</dd></div>`:""}
+        <div><dt>Services</dt><dd>${p.services}</dd></div>
+        ${p.location?`<div><dt>Location</dt><dd>${p.location}</dd></div>`:""}
+        ${p.client?`<div><dt>Client</dt><dd>${p.client}</dd></div>`:""}
+        <div><dt>Studio</dt><dd>${SN[p.studio]}</dd></div>
+        ${p.team?`<div><dt>Team</dt><dd>${p.team}</dd></div>`:""}
+      </dl>
+      <div class="ibody">
+        <p class="desc">${p.desc}</p>
+        <button class="ibtn" type="button" aria-expanded="false" aria-label="Show full description" onclick="const i=document.getElementById('pinfo');const o=i.classList.toggle('open');this.textContent=o?'−':'+';this.setAttribute('aria-expanded',o)">+</button>
+      </div>
+      <div class="pager"><a class="ibtn" href="#${prev.slug}" data-route="${prev.slug}">‹ ${prev.title}</a><a class="ibtn" href="#${next.slug}" data-route="${next.slug}">${next.title} ›</a></div>
+    </aside>
+    <div class="shots">${shots}</div>
+  </div>
+  <a class="next" href="#${next.slug}" data-route="${next.slug}"><span>Next project</span><b>${next.title} →</b></a>`;
+}
+
+/* ---------------- routing + curtain ---------------- */
+const curtain=document.getElementById("curtain");
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+let current=null,busy=false;
+function show(route){
+  const p=P.find(x=>x.slug===route);
+  const key=p?"project":(["work","about","contact"].includes(route)?route:"home");
+  document.body.dataset.view=key;
+  document.querySelectorAll(".view").forEach(v=>v.hidden=v.id!=="v-"+key);
+  if(p) renderProject(p);
+  document.querySelectorAll(".nav a").forEach(a=>{const on=a.dataset.route===(p?"work":key);on?a.setAttribute("aria-current","page"):a.removeAttribute("aria-current")});
+  document.title=p?`${p.title} — MALLER STUDIO & MOND : STUDIO`:"MALLER STUDIO & MOND : STUDIO";
+  document.getElementById("toplogo").style.visibility=key==="home"?"hidden":"visible";
+  window.scrollTo(0,0);current=route||"home";
+}
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+const CUR={home:["var(--c-yellow)","#111"],work:["var(--c-maroon)","var(--c-blush)"],project:["var(--c-maroon)","var(--c-blush)"],about:["var(--c-red)","#111"],contact:["var(--c-yellow)","#111"]};
+function viewOf(route){return P.find(x=>x.slug===route)?"project":(["work","about","contact"].includes(route)?route:"home")}
+function paint(route){const [bg,ink]=CUR[viewOf(route)];curtain.style.setProperty("--cur-bg",bg);curtain.style.setProperty("--cur-ink",ink)}
+async function go(route,push=true){
+  if(route===current||busy) return; busy=true;
+  if(push){try{history.pushState(null,"","#"+route)}catch(e){}}
+  if(reduce){show(route);busy=false;return}
+  curtain.classList.remove("up","first","done");curtain.classList.add("down");paint(route);
+  const lg=curtain.querySelector("svg");lg.style.animation="none";void lg.offsetWidth;lg.style.animation="";
+  void curtain.offsetHeight;
+  curtain.classList.remove("down");
+  await wait(820); show(route); await wait(120);
+  curtain.classList.add("up");
+  await wait(900); busy=false;
+}
+document.addEventListener("click",e=>{const a=e.target.closest("[data-route]");if(!a)return;e.preventDefault();go(a.dataset.route)});
+addEventListener("popstate",()=>go((location.hash||"#home").slice(1),false));
+
+
+/* ---------------- boot: loader slides up ---------------- */
+(async()=>{
+  document.body.classList.add("locked");
+  try{await Promise.race([document.fonts.load('16px DaVinci').then(()=>document.fonts.ready),wait(1500)])}catch(e){}
+  /* first-load logo (stacked mark): letters rise one by one, M-A-L-L-E-R, &, M-O-N-D */
+  const im=document.getElementById("introMark"),src=[...document.querySelectorAll("#mark-stack path")];
+  const order=[[0],[1],[2],[3],[4],[5],[6],[7],[8],[9],[10]];
+  order.forEach((grp,k)=>grp.forEach(idx=>{const p=src[idx].cloneNode();p.style.setProperty("--d",(120+k*70)+"ms");im.appendChild(p)}));
+  renderHome();renderLists();renderGrid();
+  show((location.hash||"#home").slice(1));
+  await wait(reduce?0:120+order.length*70+750);
+  curtain.classList.add("done");
+  await wait(reduce?0:650);
+  curtain.classList.add("up");
+  document.body.classList.remove("locked");
+})();
+/* portrait hover cursor */
+const pcur=document.getElementById("pcur");
+document.querySelectorAll("[data-cur]").forEach(f=>{
+  f.addEventListener("mouseenter",()=>{pcur.innerHTML=f.dataset.cur;pcur.className="pcur on "+f.dataset.shape});
+  f.addEventListener("mouseleave",()=>pcur.classList.remove("on"));
+  f.addEventListener("mousemove",e=>{pcur.style.left=e.clientX+"px";pcur.style.top=e.clientY+"px"});
+});
