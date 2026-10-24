@@ -313,3 +313,5 @@ body[data-view="home"] .bigmark,body[data-view="home"] .bgwrap{display:none}
 .homefoot{position:absolute;left:0;right:0;bottom:0;z-index:2;pointer-events:none}
 body[data-view="home"] .homefoot p{font-size:clamp(18px,1.6vw,26px);color:#111}
 @media (prefers-reduced-motion:reduce){.fish .tile{will-change:auto}}
+.fishtitle{display:flex;justify-content:center;transform:translateY(-50%)}
+.fishtitle svg{width:min(600px,80vw);height:auto;display:block;color:#111}
