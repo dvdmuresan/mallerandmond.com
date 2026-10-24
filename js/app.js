@@ -129,39 +129,23 @@ function setHome(i){
   if(i<0){hoverline.textContent=defaultLine;return}
   hoverline.textContent=P[i].title;
 }
-let fishRAF=0;
 function renderHome(){
-  /* infinite grid of project images, drawn through a fisheye: big and flat in the middle, small and turned away at the edges */
-  cancelAnimationFrame(fishRAF);
-  const shuffle=a=>{for(let k=a.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[a[k],a[j]]=[a[j],a[k]]}return a};
-  const pools=P.map(p=>shuffle((p.media||[]).map(m=>m.video?m.poster:m.src).filter(Boolean).map(thumbPath)));
-  const COLS=9,ROWS=7,cells=[];
-  for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){const i=(r*COLS+c*4+r)%P.length,pool=pools[i];cells.push([i,pool[(r+c)%Math.max(pool.length,1)]||thumbSrc(i),c,r])}
-  field.innerHTML=cells.map(([i,src])=>`<a class="tile" href="#${P[i].slug}" data-route="${P[i].slug}" data-i="${i}" aria-label="${P[i].title}"><img alt="" src="${src}" decoding="async" draggable="false"></a>`).join("");
-  const els=[...field.children];
-  const pick=e=>{const a=e.target.closest(".tile");if(a)setHome(+a.dataset.i)};
-  field.onmouseover=pick;field.onfocusin=pick;field.onmouseleave=()=>setHome(-1);
-  document.body.classList.remove("on-dark");
-  let ox=0,oy=0,vx=-.25,vy=-.12,mx=0,my=0;
-  field.onpointermove=e=>{const b=field.getBoundingClientRect();mx=(e.clientX-b.left)/b.width-.5;my=(e.clientY-b.top)/b.height-.5};
-  field.onpointerleave=()=>{mx=my=0};
-  const still=matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const frame=()=>{
-    const W=field.clientWidth,H=field.clientHeight,R=Math.hypot(W,H)/2,sp=Math.max(W,H)/4.6,T=sp*.6;
-    field.style.setProperty("--T",T+"px");
-    if(!still){ox+=vx-mx*2.2;oy+=vy-my*2.2}
-    const gw=COLS*sp,gh=ROWS*sp;
-    els.forEach((el,k)=>{
-      const c=k%COLS,r=(k/COLS|0);
-      let x=((c*sp+ox)%gw+gw)%gw-gw/2+sp/2,y=((r*sp+oy)%gh+gh)%gh-gh/2+sp/2;
-      const d=Math.hypot(x,y)/R,th=Math.min(d,1.25)*1.15,k2=d?Math.sin(th)/th:1; /* barrel: positions pulled toward the centre */
-      const px=x*k2*1.05,py=y*k2*1.05,sc=Math.max(.15,Math.cos(Math.min(th,1.45))*1.35);
-      el.style.transform=`translate(${W/2+px-T/2}px,${H/2+py-T/2}px) rotateY(${(x/R)*55}deg) rotateX(${-(y/R)*55}deg) scale(${sc})`;
-      el.style.zIndex=Math.round(sc*100);
-    });
-    if(!still)fishRAF=requestAnimationFrame(()=>{if(field.offsetParent)frame()});
+  /* one frosted strip with every project; hovering one swaps the dimmed background image and the text below */
+  const short=t=>{t=(t||"").replace(/\s+/g," ").trim();if(t.length<=220)return t;const c=t.slice(0,220);return c.slice(0,c.lastIndexOf(" "))+"…"};
+  const big=i=>P[i].coverPoster||P[i].cover||thumbSrc(i);
+  field.innerHTML=P.map((p,i)=>`<a class="tile" href="#${p.slug}" data-route="${p.slug}" data-i="${i}" aria-label="${p.title}"><img alt="" src="${thumbPath(p.coverPoster||p.cover||thumbSrc(i))}" decoding="async" draggable="false"></a>`).join("");
+  const show=i=>{
+    if(i===homeI)return;homeI=i;
+    const nb=bgs[bgi^1];nb.style.backgroundImage=`url("${big(i)}")`;nb.classList.add("on");bgs[bgi].classList.remove("on");bgi^=1;
+    document.getElementById("hiTitle").textContent=P[i].title;
+    document.getElementById("hiYear").textContent=P[i].year||"";
+    document.getElementById("hiDesc").textContent=short(P[i].desc);
+    [...field.children].forEach(a=>a.classList.toggle("on",+a.dataset.i===i));
   };
-  frame();
+  const pick=e=>{const a=e.target.closest(".tile");if(a)show(+a.dataset.i)};
+  field.onmouseover=pick;field.onfocusin=pick;field.onmouseleave=null;
+  document.body.classList.add("on-dark");
+  homeI=-1;show(Math.floor(Math.random()*P.length));
 }
 
 /* ---------------- work ---------------- */

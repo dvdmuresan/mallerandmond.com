@@ -319,3 +319,21 @@ body[data-view="home"]{--ground:#161616}
 .fishtitle svg{width:min(420px,56vw);color:#ececec}
 body[data-view="home"] .homefoot p{color:#ececec}
 .fish .tile:hover img,.fish .tile:focus-visible img{outline-color:#ececec}
+
+/* landing v3: frosted strip of projects over a full-bleed project image */
+body[data-view="home"]{--ground:#111}
+body[data-view="home"] .bgwrap{display:block;position:fixed;inset:0;z-index:0}
+.bgimg{background-size:cover;background-position:center}
+body[data-view="home"] .bgwrap::after{content:"";position:absolute;inset:0;z-index:2;opacity:1;mix-blend-mode:normal;animation:none;background:rgba(0,0,0,.58)}
+body[data-view="home"] .homefoot{display:none}
+.hstage{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;padding-top:calc(34svh - 70px);padding-inline:var(--side);min-height:100svh;box-sizing:border-box}
+.field.strip{position:relative;inset:auto;display:flex;gap:10px;padding:10px;margin:0;max-width:100%;overflow-x:auto;scrollbar-width:none;border-radius:16px;background:rgba(255,255,255,.14);-webkit-backdrop-filter:blur(22px) saturate(1.2);backdrop-filter:blur(22px) saturate(1.2);box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}
+.strip .tile{position:relative;flex:0 0 auto;width:clamp(96px,9vw,150px);height:auto;aspect-ratio:4/3;--S:auto;transform:none!important}
+.strip .tile img{width:100%;height:100%;max-width:none;max-height:none;object-fit:cover;border-radius:9px;transition:transform .4s cubic-bezier(.2,.7,.2,1),opacity .3s}
+.strip:hover .tile img{opacity:.55}
+.strip .tile:hover img,.strip .tile:focus-visible img,.strip .tile.on img{opacity:1;transform:scale(1.04);outline:none}
+.hinfo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:40px;width:min(100%,880px);margin-top:300px;color:#fff;padding-bottom:40px}
+.hi-t h2{margin:0;font-size:clamp(28px,3vw,48px);font-weight:600;letter-spacing:-.03em;line-height:1}
+.hi-t span{display:block;margin-top:8px;font-size:14px;opacity:.7}
+#hiDesc{margin:0;font-family:"Kolonia",var(--f-serif);font-size:18px;line-height:1.45;letter-spacing:-.02em;opacity:.92}
+@media (max-width:700px){.hstage{padding-top:110px}.hinfo{grid-template-columns:1fr;gap:16px;margin-top:60px}}
