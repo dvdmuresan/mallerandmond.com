@@ -25,7 +25,7 @@ const WORK_SIZES="(max-width: 700px) calc(100vw - 32px), calc((100vw - 60px) / 3
 const autoVideo=!matchMedia("(prefers-reduced-motion: reduce)").matches&&!navigator.connection?.saveData;
 let videoLoader,videoPlayer;
 function playVideo(video){
-  if(autoVideo&&!document.hidden&&video.dataset.visible==="true")video.play().catch(()=>{});
+  if(autoVideo&&!document.hidden&&!document.body.classList.contains("transitioning")&&video.dataset.visible==="true")video.play().catch(()=>{});
 }
 function syncMedia(view){
   videoLoader?.disconnect();videoPlayer?.disconnect();
@@ -232,9 +232,55 @@ function show(route){
   syncMedia(document.getElementById("v-"+key));
 }
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
+const painted=()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+/* Switch views only once the curtain has actually stopped, even on a busy frame. */
+function moveCurtain(change){
+  return new Promise(resolve=>{
+    let timer;
+    const finish=()=>{
+      clearTimeout(timer);
+      curtain.removeEventListener("transitionend",ended);
+      curtain.removeEventListener("transitioncancel",ended);
+      resolve();
+    };
+    const ended=e=>{if(e.target===curtain&&e.propertyName==="transform")finish()};
+    curtain.addEventListener("transitionend",ended);
+    curtain.addEventListener("transitioncancel",ended);
+    change();
+    const style=getComputedStyle(curtain);
+    const seconds=value=>value.endsWith("ms")?parseFloat(value)/1000:parseFloat(value);
+    const durations=style.transitionDuration.split(",").map(seconds);
+    const delays=style.transitionDelay.split(",").map(seconds);
+    const duration=Math.max(...durations.map((d,i)=>d+delays[i%delays.length]));
+    /* A hidden tab or disabled transition may never dispatch transitionend. */
+    timer=setTimeout(finish,duration*1000+150);
+  });
+}
+async function prepareReveal(){
+  await painted();
+  const view=document.querySelector(".view:not([hidden])");
+  const images=[...view.querySelectorAll("img")].filter(img=>{
+    const r=img.getBoundingClientRect();
+    return r.width>0&&r.height>0&&r.bottom>0&&r.top<innerHeight;
+  });
+  const ready=images.map(img=>{
+    img.loading="eager";
+    return img.decode?img.decode().catch(()=>{}):Promise.resolve();
+  });
+  /* Give visible images a chance to decode without holding up slow connections. */
+  await Promise.race([Promise.all(ready),wait(200)]);
+  await painted();
+}
+function finishTransition(){
+  document.body.classList.remove("transitioning");
+  document.querySelectorAll("video").forEach(playVideo);
+}
 const CUR={home:["var(--c-yellow)","#111"],work:["var(--c-maroon)","var(--c-blush)"],project:["var(--c-maroon)","var(--c-blush)"],about:["var(--c-red)","#111"],contact:["var(--c-yellow)","#111"]};
 function viewOf(route){return P.find(x=>x.slug===route)?"project":(["work","about","contact"].includes(route)?route:"home")}
-function paint(route){const [bg,ink]=CUR[viewOf(route)];curtain.style.setProperty("--cur-bg",bg);curtain.style.setProperty("--cur-ink",ink)}
+/* transition palettes: background + logo colour; a different one each time */
+const COMBOS=[["#c8c5fb","#2b1811"],["#ff3d0a","#b49d84"],["#2b1811","#c8c5fb"],["#b49d84","#ff3d0a"],["#e8141a","#ff9fe0"],["#4f3210","#d6f562"],["#bb88ee","#d6f562"],["var(--c-yellow)","#2b1811"]];
+let comboI=-1;
+function paint(route){comboI=(comboI+1+Math.floor(Math.random()*(COMBOS.length-1)))%COMBOS.length;const [bg,ink]=COMBOS[comboI];curtain.style.setProperty("--cur-bg",bg);curtain.style.setProperty("--cur-ink",ink)}
 async function go(route,push=true){
   route=P.some(p=>p.slug===route)||["home","work","about","contact"].includes(route)?route:"home";
   if(busy){queuedRoute={route,push};return}
@@ -243,14 +289,17 @@ async function go(route,push=true){
   if(push){try{history.pushState(null,"","#"+route)}catch(e){}}
   try{
     if(reduce){show(route);curtain.classList.add("up");return}
+    document.body.classList.add("transitioning");
+    document.querySelectorAll("video").forEach(v=>v.pause());
     curtain.classList.remove("up","first","done");curtain.classList.add("down");paint(route);
     const lg=curtain.querySelector("svg");lg.style.animation="none";void lg.offsetWidth;lg.style.animation="";
     void curtain.offsetHeight;
-    curtain.classList.remove("down");
-    await wait(820);show(route);await wait(120);
-    curtain.classList.add("up");
-    await wait(900);
+    await moveCurtain(()=>curtain.classList.remove("down"));
+    show(route);
+    await prepareReveal();
+    await moveCurtain(()=>curtain.classList.add("up"));
   }finally{
+    finishTransition();
     busy=false;
     if(queuedRoute){const next=queuedRoute;queuedRoute=null;go(next.route,next.push)}
   }
@@ -262,7 +311,7 @@ addEventListener("hashchange",()=>go((location.hash||"#home").slice(1),false));
 
 /* ---------------- boot: loader slides up ---------------- */
 (async()=>{
-  document.body.classList.add("locked");
+  document.body.classList.add("locked","transitioning");
   /* first-load logo (stacked mark): letters rise one by one, M-A-L-L-E-R, &, M-O-N-D */
   const im=document.getElementById("introMark"),src=[...document.querySelectorAll("#mark-stack path")];
   const order=[[0],[1],[2],[3],[4],[5],[6],[10],[7],[8],[9]]; /* new SVG lists the M of MOND last */
@@ -273,9 +322,13 @@ addEventListener("hashchange",()=>go((location.hash||"#home").slice(1),false));
   await wait(reduce?0:120+order.length*70+750);
   curtain.classList.add("done");
   await wait(reduce?0:650);
-  curtain.classList.add("up");
-  await wait(reduce?0:900);
+  if(reduce)curtain.classList.add("up");
+  else{
+    await prepareReveal();
+    await moveCurtain(()=>curtain.classList.add("up"));
+  }
   document.body.classList.remove("locked");
+  finishTransition();
   busy=false;
   if(queuedRoute){const next=queuedRoute;queuedRoute=null;go(next.route,next.push)}
 })();
