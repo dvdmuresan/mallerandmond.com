@@ -292,6 +292,6 @@ body[data-view="contact"] .foot{margin-top:0;min-height:calc(100svh - 120px);pad
 
 .why p,.joke p{font-family:"Kolonia",var(--f-serif)}
 .why em,.joke em{font-style:italic}
-.why p,.joke p{font-size:clamp(13.3px,1.12vw,16.8px);line-height:1.09;letter-spacing:-.02em;max-width:none}
+.why p,.joke p{font-size:18px;line-height:normal;letter-spacing:-.02em;max-width:600px}
 .why,.joke{padding-right:calc(150px - var(--sideR,20px))}
 @media (max-width:900px){.why,.joke{padding-right:0}}
