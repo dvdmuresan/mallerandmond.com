@@ -265,7 +265,7 @@ addEventListener("hashchange",()=>go((location.hash||"#home").slice(1),false));
   document.body.classList.add("locked");
   /* first-load logo (stacked mark): letters rise one by one, M-A-L-L-E-R, &, M-O-N-D */
   const im=document.getElementById("introMark"),src=[...document.querySelectorAll("#mark-stack path")];
-  const order=[[0],[1],[2],[3],[4],[5],[6],[7],[8],[9],[10]];
+  const order=[[0],[1],[2],[3],[4],[5],[6],[10],[7],[8],[9]]; /* new SVG lists the M of MOND last */
   order.forEach((grp,k)=>grp.forEach(idx=>{const p=src[idx].cloneNode();p.style.setProperty("--d",(120+k*70)+"ms");im.appendChild(p)}));
   renderLists();
   show((location.hash||"#home").slice(1));
