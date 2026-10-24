@@ -343,3 +343,15 @@ body[data-view="home"] .homefoot{display:none}
 .hi-t h2,.hi-t span,#hiDesc{font-family:var(--f-sans);font-size:13px;font-weight:500;line-height:1.4;letter-spacing:0;opacity:1;margin:0}
 .hi-t span{margin-top:0;opacity:.7}
 @media (max-width:700px){.hinfo{margin-top:30px;grid-template-columns:1fr;gap:10px}.hlogo2{width:180px}}
+/* landing v4: wide rectangle of 16:9 images, logo / title / short text in a row below */
+.hstage{padding-top:calc(40svh - 9vw)}
+.hwrap{width:min(81vw,1620px);align-items:stretch}
+.field.strip{overflow:hidden;border-radius:clamp(14px,1.6vw,26px);padding:clamp(6px,.6vw,10px);gap:clamp(6px,.6vw,10px)}
+.strip .tile{flex:1 1 0;width:auto;min-width:0;aspect-ratio:16/9}
+.strip .tile img{border-radius:clamp(8px,1vw,16px)}
+.hinfo{width:100%;min-width:0;display:grid;grid-template-columns:37fr 20fr 43fr;gap:0;align-items:start;margin-top:30px}
+.hlogo2{width:clamp(90px,7vw,130px);margin:0}
+.hi-t,#hiDesc{padding-right:16px}
+.bgimg{filter:blur(28px);transform:scale(1.12)}
+@media (min-width:701px){body[data-view="home"] .nav{position:fixed;left:50%;top:var(--pad);transform:translateX(-50%)}}
+@media (max-width:700px){.hwrap{width:100%}.field.strip{overflow-x:auto}.strip .tile{flex:0 0 46%}.hinfo{grid-template-columns:1fr;gap:10px}.hlogo2{width:120px}}

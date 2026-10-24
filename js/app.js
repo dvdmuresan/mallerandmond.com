@@ -129,23 +129,30 @@ function setHome(i){
   if(i<0){hoverline.textContent=defaultLine;return}
   hoverline.textContent=P[i].title;
 }
+/* landing: six projects with their own hero image and a one-line description */
+const HOME=[
+  ["almost-sweet","Naming, identity and social for a Romanian cordial and mixer brand."],
+  ["bucharest-food-week","Identity and launch campaign for a citywide week of set menus."],
+  ["ryu","A Japanese-inspired, but not Japanese, identity for a sando bar."],
+  ["brue","A hexagon-pixel identity for a specialty café in Arad."],
+  ["macn","A mark drawn from the arches of the Bánffy Palace entrance."],
+  ["dream-ville-software","A bold, playful identity for a Cluj software company."]
+].map(([slug,line])=>({i:P.findIndex(p=>p.slug===slug),img:`img/home/${slug}.jpg`,line})).filter(h=>h.i>=0);
 function renderHome(){
-  /* one frosted strip with every project; hovering one swaps the dimmed background image and the text below */
-  const short=t=>{t=(t||"").replace(/\s+/g," ").trim();if(t.length<=220)return t;const c=t.slice(0,220);return c.slice(0,c.lastIndexOf(" "))+"…"};
-  const big=i=>P[i].coverPoster||P[i].cover||thumbSrc(i);
-  field.innerHTML=P.slice(0,6).map((p,i)=>`<a class="tile" href="#${p.slug}" data-route="${p.slug}" data-i="${i}" aria-label="${p.title}"><img alt="" src="${thumbPath(p.coverPoster||p.cover||thumbSrc(i))}" decoding="async" draggable="false"></a>`).join("");
-  const show=i=>{
-    if(i===homeI)return;homeI=i;
-    const nb=bgs[bgi^1];nb.style.backgroundImage=`url("${big(i)}")`;nb.classList.add("on");bgs[bgi].classList.remove("on");bgi^=1;
-    document.getElementById("hiTitle").textContent=P[i].title;
-    document.getElementById("hiYear").textContent=P[i].year||"";
-    document.getElementById("hiDesc").textContent=short(P[i].desc);
-    [...field.children].forEach(a=>a.classList.toggle("on",+a.dataset.i===i));
+  field.innerHTML=HOME.map((h,k)=>`<a class="tile" href="#${P[h.i].slug}" data-route="${P[h.i].slug}" data-k="${k}" aria-label="${P[h.i].title}"><img alt="" src="${h.img}" decoding="async" draggable="false"></a>`).join("");
+  let cur=-1;
+  const show=k=>{
+    if(k===cur)return;cur=k;const h=HOME[k];
+    const nb=bgs[bgi^1];nb.style.backgroundImage=`url("${h.img}")`;nb.classList.add("on");bgs[bgi].classList.remove("on");bgi^=1;
+    document.getElementById("hiTitle").textContent=P[h.i].title;
+    document.getElementById("hiYear").textContent=P[h.i].year||"";
+    document.getElementById("hiDesc").textContent=h.line;
+    [...field.children].forEach(a=>a.classList.toggle("on",+a.dataset.k===k));
   };
-  const pick=e=>{const a=e.target.closest(".tile");if(a)show(+a.dataset.i)};
+  const pick=e=>{const a=e.target.closest(".tile");if(a)show(+a.dataset.k)};
   field.onmouseover=pick;field.onfocusin=pick;field.onmouseleave=null;
   document.body.classList.add("on-dark");
-  homeI=-1;show(Math.floor(Math.random()*Math.min(6,P.length)));
+  show(Math.floor(Math.random()*HOME.length));
 }
 
 /* ---------------- work ---------------- */
