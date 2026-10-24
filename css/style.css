@@ -1,3 +1,5 @@
+@font-face{font-family:"Kolonia";src:url("../fonts/Kolonia-Regular.otf") format("opentype");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Kolonia";src:url("../fonts/Kolonia-Italic.otf") format("opentype");font-weight:400;font-style:italic;font-display:swap}
 /* Layout: white ground, light grey rounded rectangles carry information; home = dark screen, word-grid backdrop + rotating 3D X of project leaves, work = asymmetric 12-col, project = narrow boxed info left + offset images right. Single light look by choice. */
 @font-face{font-family:"Suisse BP Intl";src:local("Suisse BP Int'l Semi Bold"),local("Suisse BP Int'l SemiBold"),local("SuisseBPIntl-SemiBold"),local("Suisse BP Intl SemiBold");font-weight:600;font-display:swap}
 @font-face{font-family:"Suisse BP Intl";src:local("Suisse BP Int'l Regular"),local("SuisseBPIntl-Regular"),local("Suisse BP Intl Regular");font-weight:400;font-display:swap}
@@ -287,3 +289,6 @@ body[data-view="contact"] .foot{margin-top:0;min-height:calc(100svh - 120px);pad
   .menu-open .logo{opacity:1;pointer-events:auto;position:relative;z-index:2}
   body.menu-open{overflow:hidden}
 }
+
+.why p,.joke p{font-family:"Kolonia",var(--f-serif)}
+.why em,.joke em{font-style:italic}
