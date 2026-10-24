@@ -278,7 +278,7 @@ function finishTransition(){
 const CUR={home:["var(--c-yellow)","#111"],work:["var(--c-maroon)","var(--c-blush)"],project:["var(--c-maroon)","var(--c-blush)"],about:["var(--c-red)","#111"],contact:["var(--c-yellow)","#111"]};
 function viewOf(route){return P.find(x=>x.slug===route)?"project":(["work","about","contact"].includes(route)?route:"home")}
 /* transition palettes: background + logo colour; a different one each time */
-const COMBOS=[["#c8c5fb","#2b1811"],["#ff3d0a","#b49d84"],["#2b1811","#c8c5fb"],["#b49d84","#ff3d0a"],["#e8141a","#ff9fe0"],["#4f3210","#d6f562"],["#bb88ee","#d6f562"],["var(--c-yellow)","#2b1811"]];
+const COMBOS=[["#c8c5fb","#291811"],["#ea4c27","#b49d84"],["#291811","#c8c5fb"],["#b49d84","#ea4c27"],["var(--c-yellow)","#291811"]];
 let comboI=-1;
 function paint(route){comboI=(comboI+1+Math.floor(Math.random()*(COMBOS.length-1)))%COMBOS.length;const [bg,ink]=COMBOS[comboI];curtain.style.setProperty("--cur-bg",bg);curtain.style.setProperty("--cur-ink",ink)}
 async function go(route,push=true){
