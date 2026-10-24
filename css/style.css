@@ -361,3 +361,6 @@ body[data-view="home"] .homefoot{display:none}
 @media (max-width:700px){.hlogo2{width:200px}}
 .pcur.ycircle{width:110px;height:110px;border-radius:50%;background:var(--c-yellow);color:#111}
 .hlogolink{display:block;width:fit-content}
+@media (min-width:701px){.hinfo{grid-template-columns:55fr 17fr 28fr}}
+#hiDesc{max-width:340px}
+.hi-t h2,.hi-t span,#hiDesc{font-size:16px}
