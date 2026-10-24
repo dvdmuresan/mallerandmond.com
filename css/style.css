@@ -185,7 +185,7 @@ a.next:hover b{background:var(--flash);border-radius:var(--r)}
 .studio-card{position:relative;grid-column:1;transition:background-color .3s}
 .why,.joke{grid-column:2!important;margin-left:0!important;align-self:start}
 .why{grid-row:1}.joke{grid-row:2}
-.about{grid-template-columns:calc((100% - 100px) * .375) 1fr;column-gap:100px}
+.about{grid-template-columns:calc((100% - 100px) * .375) 1fr;column-gap:250px}
 @media (max-width:900px){.about{grid-template-columns:1fr}}
 @media (max-width:900px){.why,.joke{grid-column:1!important;grid-row:auto}}
 .sc-maller:hover{background:var(--c-yellow)}
@@ -206,7 +206,7 @@ a.next:hover b{background:var(--flash);border-radius:var(--r)}
 @media (max-width:900px){
   .field{grid-template-columns:repeat(4,minmax(0,1fr))}.tile{--S:15vw}.about{grid-template-columns:1fr}.why,.joke{margin-left:calc(32px + (100% - 36px) * .4)}}
 @media (max-width:520px){.why,.joke{margin-left:0}}
-#v-about .hlist{margin-left:calc((100% - 100px) * .375 + 100px)}
+#v-about .hlist{margin-left:calc((100% - 100px) * .375 + 250px)}
 @media (max-width:900px){#v-about .hlist{margin-left:0}}
 @media (max-width:520px){#v-about .hlist{margin-left:0}}
 @media (max-width:520px){.studio-card{grid-template-columns:1fr}}
