@@ -337,3 +337,9 @@ body[data-view="home"] .homefoot{display:none}
 .hi-t span{display:block;margin-top:8px;font-size:14px;opacity:.7}
 #hiDesc{margin:0;font-family:"Kolonia",var(--f-serif);font-size:18px;line-height:1.45;letter-spacing:-.02em;opacity:.92}
 @media (max-width:700px){.hstage{padding-top:110px}.hinfo{grid-template-columns:1fr;gap:16px;margin-top:60px}}
+.hwrap{display:flex;flex-direction:column;align-items:flex-start;width:fit-content;max-width:100%}
+.hlogo2{display:block;width:240px;height:auto;color:#fff;margin:0 0 16px}
+.hinfo{width:0;min-width:100%;margin-top:30px;gap:24px;grid-template-columns:minmax(0,1fr) minmax(0,2fr)}
+.hi-t h2,.hi-t span,#hiDesc{font-family:var(--f-sans);font-size:13px;font-weight:500;line-height:1.4;letter-spacing:0;opacity:1;margin:0}
+.hi-t span{margin-top:0;opacity:.7}
+@media (max-width:700px){.hinfo{margin-top:30px;grid-template-columns:1fr;gap:10px}.hlogo2{width:180px}}

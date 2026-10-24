@@ -133,7 +133,7 @@ function renderHome(){
   /* one frosted strip with every project; hovering one swaps the dimmed background image and the text below */
   const short=t=>{t=(t||"").replace(/\s+/g," ").trim();if(t.length<=220)return t;const c=t.slice(0,220);return c.slice(0,c.lastIndexOf(" "))+"…"};
   const big=i=>P[i].coverPoster||P[i].cover||thumbSrc(i);
-  field.innerHTML=P.map((p,i)=>`<a class="tile" href="#${p.slug}" data-route="${p.slug}" data-i="${i}" aria-label="${p.title}"><img alt="" src="${thumbPath(p.coverPoster||p.cover||thumbSrc(i))}" decoding="async" draggable="false"></a>`).join("");
+  field.innerHTML=P.slice(0,6).map((p,i)=>`<a class="tile" href="#${p.slug}" data-route="${p.slug}" data-i="${i}" aria-label="${p.title}"><img alt="" src="${thumbPath(p.coverPoster||p.cover||thumbSrc(i))}" decoding="async" draggable="false"></a>`).join("");
   const show=i=>{
     if(i===homeI)return;homeI=i;
     const nb=bgs[bgi^1];nb.style.backgroundImage=`url("${big(i)}")`;nb.classList.add("on");bgs[bgi].classList.remove("on");bgi^=1;
@@ -145,7 +145,7 @@ function renderHome(){
   const pick=e=>{const a=e.target.closest(".tile");if(a)show(+a.dataset.i)};
   field.onmouseover=pick;field.onfocusin=pick;field.onmouseleave=null;
   document.body.classList.add("on-dark");
-  homeI=-1;show(Math.floor(Math.random()*P.length));
+  homeI=-1;show(Math.floor(Math.random()*Math.min(6,P.length)));
 }
 
 /* ---------------- work ---------------- */
