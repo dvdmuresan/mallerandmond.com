@@ -129,30 +129,23 @@ function setHome(i){
   if(i<0){hoverline.textContent=defaultLine;return}
   hoverline.textContent=P[i].title;
 }
-/* landing: six projects with their own hero image and a one-line description */
-const HOME=[
-  ["almost-sweet","Naming, identity and social for a Romanian cordial and mixer brand, now in 200+ bars."],
-  ["bucharest-food-week","Identity and launch for a citywide week of set menus across 100+ restaurants."],
-  ["ryu","A Japanese-inspired, but not Japanese, identity for a sando bar in red and white."],
-  ["brue","A hexagon-pixel identity for a specialty café in Arad, carried from the menus and cups into the interior."],
-  ["macn","A new museum identity, with a mark drawn from the arches of the Bánffy Palace."],
-  ["dream-ville-software","A bold, playful identity for a Cluj software company, from stationery and merch to signage and the website."]
-].map(([slug,line])=>({i:P.findIndex(p=>p.slug===slug),img:`img/home/${slug}.jpg`,line})).filter(h=>h.i>=0);
 function renderHome(){
-  field.innerHTML=HOME.map((h,k)=>`<a class="tile" href="#${P[h.i].slug}" data-route="${P[h.i].slug}" data-k="${k}" aria-label="${P[h.i].title}"><img alt="" src="${h.img}" decoding="async" draggable="false"></a>`).join("");
-  let cur=-1;
-  const show=k=>{
-    if(k===cur)return;cur=k;const h=HOME[k];
-    const nb=bgs[bgi^1];nb.style.backgroundImage=`url("${h.img}")`;nb.classList.add("on");bgs[bgi].classList.remove("on");bgi^=1;
-    document.getElementById("hiTitle").textContent=P[h.i].title;
-    document.getElementById("hiYear").textContent=P[h.i].year||"";
-    document.getElementById("hiDesc").textContent=h.line;
-    [...field.children].forEach(a=>a.classList.toggle("on",+a.dataset.k===k));
-  };
-  const pick=e=>{const a=e.target.closest(".tile");if(a)show(+a.dataset.k)};
-  field.onmouseover=pick;field.onfocusin=pick;field.onmouseleave=null;
-  document.body.classList.add("on-dark");
-  show(Math.floor(Math.random()*HOME.length));
+  /* 18 tiles in a 6×3 grid: projects shuffled and repeated, each repeat showing a different image from that project */
+  const TILES=18,shuffle=a=>{for(let k=a.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[a[k],a[j]]=[a[j],a[k]]}return a};
+  const pools=P.map(p=>shuffle((p.media||[]).map(m=>m.video?m.poster:m.src).filter(Boolean).map(thumbPath)));
+  const tiles=[];let round=0;
+  while(tiles.length<TILES&&round<40){
+    const order=shuffle(P.map((_,i)=>i));
+    if(tiles.length&&order[0]===tiles[tiles.length-1])order.push(order.shift());
+    for(const i of order){if(tiles.length>=TILES)break;const src=pools[i][round%Math.max(pools[i].length,1)]||thumbSrc(i);tiles.push([i,src])}
+    round++;
+  }
+  field.style.setProperty("--cols",6);
+  field.innerHTML=tiles.map(([i,src])=>{const p=P[i];return `<a class="tile" href="#${p.slug}" data-route="${p.slug}" data-i="${i}" aria-label="${p.title}"><img alt="" src="${src}" decoding="async"></a>`}).join("");
+  const pick=e=>{const a=e.target.closest(".tile");if(a)setHome(+a.dataset.i)};
+  field.addEventListener("mouseover",pick);field.addEventListener("focusin",pick);
+  field.addEventListener("mouseleave",()=>setHome(-1));
+  document.body.classList.add("on-dark");field.addEventListener("focusout",e=>{if(!field.contains(e.relatedTarget))setHome(-1)});
 }
 
 /* ---------------- work ---------------- */
