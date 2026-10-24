@@ -131,12 +131,12 @@ function setHome(i){
 }
 /* landing: six projects with their own hero image and a one-line description */
 const HOME=[
-  ["almost-sweet","Naming, identity and social for a Romanian cordial and mixer brand."],
-  ["bucharest-food-week","Identity and launch campaign for a citywide week of set menus."],
-  ["ryu","A Japanese-inspired, but not Japanese, identity for a sando bar."],
-  ["brue","A hexagon-pixel identity for a specialty café in Arad."],
-  ["macn","A mark drawn from the arches of the Bánffy Palace entrance."],
-  ["dream-ville-software","A bold, playful identity for a Cluj software company."]
+  ["almost-sweet","Naming, identity and social for a Romanian cordial and mixer brand, now in 200+ bars."],
+  ["bucharest-food-week","Identity and launch for a citywide week of set menus across 100+ restaurants."],
+  ["ryu","A Japanese-inspired, but not Japanese, identity for a sando bar in red and white."],
+  ["brue","A hexagon-pixel identity for a specialty café in Arad, carried from the menus and cups into the interior."],
+  ["macn","A new museum identity, with a mark drawn from the arches of the Bánffy Palace."],
+  ["dream-ville-software","A bold, playful identity for a Cluj software company, from stationery and merch to signage and the website."]
 ].map(([slug,line])=>({i:P.findIndex(p=>p.slug===slug),img:`img/home/${slug}.jpg`,line})).filter(h=>h.i>=0);
 function renderHome(){
   field.innerHTML=HOME.map((h,k)=>`<a class="tile" href="#${P[h.i].slug}" data-route="${P[h.i].slug}" data-k="${k}" aria-label="${P[h.i].title}"><img alt="" src="${h.img}" decoding="async" draggable="false"></a>`).join("");

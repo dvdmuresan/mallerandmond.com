@@ -355,3 +355,9 @@ body[data-view="home"] .homefoot{display:none}
 .bgimg{filter:blur(28px);transform:scale(1.12)}
 @media (min-width:701px){body[data-view="home"] .nav{position:fixed;left:50%;top:var(--pad);transform:translateX(-50%)}}
 @media (max-width:700px){.hwrap{width:100%}.field.strip{overflow-x:auto}.strip .tile{flex:0 0 46%}.hinfo{grid-template-columns:1fr;gap:10px}.hlogo2{width:120px}}
+.hlogo2{width:clamp(180px,14vw,260px)}
+.hi-t h2,.hi-t span,#hiDesc{font-size:18px;line-height:1.3}
+.bgimg{filter:blur(20px)}
+@media (max-width:700px){.hlogo2{width:200px}}
+.pcur.ycircle{width:110px;height:110px;border-radius:50%;background:var(--c-yellow);color:#111}
+.hlogolink{display:block;width:fit-content}
