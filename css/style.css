@@ -315,3 +315,7 @@ body[data-view="home"] .homefoot p{font-size:clamp(18px,1.6vw,26px);color:#111}
 @media (prefers-reduced-motion:reduce){.fish .tile{will-change:auto}}
 .fishtitle{display:flex;justify-content:center;transform:translateY(-50%)}
 .fishtitle svg{width:min(600px,80vw);height:auto;display:block;color:#111}
+body[data-view="home"]{--ground:#161616}
+.fishtitle svg{width:min(420px,56vw);color:#ececec}
+body[data-view="home"] .homefoot p{color:#ececec}
+.fish .tile:hover img,.fish .tile:focus-visible img{outline-color:#ececec}

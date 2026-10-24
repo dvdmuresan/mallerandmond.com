@@ -147,7 +147,7 @@ function renderHome(){
   field.onpointerleave=()=>{mx=my=0};
   const still=matchMedia("(prefers-reduced-motion: reduce)").matches;
   const frame=()=>{
-    const W=field.clientWidth,H=field.clientHeight,R=Math.hypot(W,H)/2,sp=Math.max(W,H)/6.4,T=sp*.6;
+    const W=field.clientWidth,H=field.clientHeight,R=Math.hypot(W,H)/2,sp=Math.max(W,H)/4.6,T=sp*.6;
     field.style.setProperty("--T",T+"px");
     if(!still){ox+=vx-mx*2.2;oy+=vy-my*2.2}
     const gw=COLS*sp,gh=ROWS*sp;
