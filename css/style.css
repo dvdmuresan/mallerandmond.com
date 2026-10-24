@@ -295,3 +295,5 @@ body[data-view="contact"] .foot{margin-top:0;min-height:calc(100svh - 120px);pad
 .why p,.joke p{font-size:18px;line-height:1.47;letter-spacing:-.02em;max-width:600px}
 .why,.joke{padding-right:calc(150px - var(--sideR,20px))}
 @media (max-width:900px){.why,.joke{padding-right:0}}
+.homefoot p,.desc{font-family:"Kolonia",var(--f-serif)}
+.desc{font-weight:400;letter-spacing:-.02em;line-height:1.35}
