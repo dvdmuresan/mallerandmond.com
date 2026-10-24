@@ -12,7 +12,7 @@ const S = {
   full:"21/9"
 };
 
-const SN={"Maller":"MALLER STUDIO","Mond":"MOND : STUDIO","Maller & Mond":"MALLER STUDIO × MOND : STUDIO"};
+const SN={"Maller":"STUDIO MALLER","Mond":"MOND : STUDIO","Maller & Mond":"STUDIO MALLER × MOND : STUDIO"};
 /* Let the browser choose an existing thumbnail, a 960px copy, or the original. */
 const thumbPath=src=>src.replace(/\/([^/]+)\.(?:jpg|webp)$/, "/thumbs/$1.jpg");
 function imageAttrs(src,sizes,eager=false){
@@ -226,7 +226,7 @@ function show(route){
   document.querySelectorAll(".view").forEach(v=>v.hidden=v.id!=="v-"+key);
   if(p&&vp.dataset.project!==p.slug){renderProject(p);vp.dataset.project=p.slug}
   document.querySelectorAll(".nav a").forEach(a=>{const on=a.dataset.route===(p?"work":key);on?a.setAttribute("aria-current","page"):a.removeAttribute("aria-current")});
-  document.title=p?`${p.title} — MALLER STUDIO & MOND : STUDIO`:"MALLER STUDIO & MOND : STUDIO";
+  document.title=p?`${p.title} — STUDIO MALLER & MOND : STUDIO`:"STUDIO MALLER & MOND : STUDIO";
   document.getElementById("toplogo").style.visibility=key==="home"?"hidden":"visible";
   window.scrollTo(0,0);current=route||"home";
   syncMedia(document.getElementById("v-"+key));

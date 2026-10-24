@@ -1,6 +1,6 @@
 # MALLER & MOND — portfolio site
 
-A joint portfolio site for MALLER STUDIO and MOND : STUDIO. It's one page, `index.html`,
+A joint portfolio site for STUDIO MALLER and MOND : STUDIO. It's one page, `index.html`,
 with Home, Work, each project, About and Contact all handled inside it.
 
 ## Folder
