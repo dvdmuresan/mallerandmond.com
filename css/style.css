@@ -297,4 +297,4 @@ body[data-view="contact"] .foot{margin-top:0;min-height:calc(100svh - 120px);pad
 @media (max-width:900px){.why,.joke{padding-right:0}}
 .homefoot p,.desc{font-family:"Kolonia",var(--f-serif)}
 .desc{font-weight:400;letter-spacing:-.02em;line-height:1.35}
-.sc-body h2,.why h2,.joke h2{background:var(--c-yellow);color:#111;border-radius:var(--r);padding:2px 6px;margin-left:-6px;align-self:flex-start;justify-self:start;width:fit-content}
+.why h2,.joke h2{background:var(--c-yellow);color:#111;border-radius:var(--r);padding:2px 6px;margin-left:-6px;align-self:flex-start;justify-self:start;width:fit-content}
