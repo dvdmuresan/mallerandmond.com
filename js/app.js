@@ -117,7 +117,7 @@ function isDark(hex){const n=parseInt(hex.slice(1),16),f=v=>{v/=255;return v<=.0
 function paintHome(color){const nb=bgs[bgi^1];nb.style.backgroundColor=color;nb.classList.add("on");bgs[bgi].classList.remove("on");bgi^=1;
   document.body.classList.toggle("on-dark",!color||isDark(color))}
 /* projects still in progress: edit this list (shown under "Working on right now" at the bottom of Work and About) */
-const CLIENTS=[["Marty","Cluj-Napoca, RO"],["Liszt","Budapest, HU"],["Olivo","Cluj-Napoca, RO"],["House of Music","Budapest, HU"],["Narcoffee","Cluj-Napoca, RO"],["GoHome","Amsterdam, NL"]];
+const CLIENTS=[["Aruma House","Bucharest, RO"],["ZOZ Coffee","Arad, RO"],["La Creme","Arad, RO"],["Chiaro Gelato","Timișoara, RO"],["Clinica Thiess","Bucharest, RO"],["Foodie","Arad, RO"],["Marty","Cluj-Napoca, RO"],["Liszt","Budapest, HU"],["Olivo","Cluj-Napoca, RO"],["House of Music","Budapest, HU"],["Narcoffee","Cluj-Napoca, RO"],["GoHome","Amsterdam, NL"]];
 const NOW=[["Ialoc","Bucharest, RO"],["Pizza 5 Colțuri","Arad, RO"],["Craft Ice","Bucharest, RO"],["IOTA","Bucharest, RO"],["Megamontaj","Târgu Mureș, RO"],["Fufu Bakerhouse","Amsterdam, NL"]];
 const li=([n,w])=>`<li>${n}, <span class="hl-where">${w}</span></li>`;
 function renderLists(){

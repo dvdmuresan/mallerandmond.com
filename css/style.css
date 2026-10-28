@@ -298,3 +298,4 @@ body[data-view="contact"] .foot{margin-top:0;min-height:calc(100svh - 120px);pad
 .homefoot p,.desc{font-family:"Kolonia",var(--f-serif)}
 .desc{font-weight:400;letter-spacing:-.02em;line-height:1.35}
 .why h2,.joke h2{background:var(--c-yellow);color:#111;border-radius:var(--r);padding:2px 6px;margin-left:-6px;align-self:flex-start;justify-self:start;width:fit-content}
+.hl-projects{grid-template-rows:repeat(6,auto)}
