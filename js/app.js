@@ -118,7 +118,7 @@ function paintHome(color){const nb=bgs[bgi^1];nb.style.backgroundColor=color;nb.
   document.body.classList.toggle("on-dark",!color||isDark(color))}
 /* projects still in progress: edit this list (shown under "Working on right now" at the bottom of Work and About) */
 const CLIENTS=[["Aruma House","Bucharest, RO"],["ZOZ Coffee","Arad, RO"],["La Creme","Arad, RO"],["Chiaro Gelato","Timișoara, RO"],["Clinica Thiess","Bucharest, RO"],["Foodie","Arad, RO"],["Marty Restaurants","Cluj-Napoca, RO"],["Liszt Ferenc Music Academy","Budapest, HU"],["Olivo Bistro","Cluj-Napoca, RO"],["House of Music","Budapest, HU"],["Narcoffee","Cluj-Napoca, RO"],["GoHome","Amsterdam, NL"]];
-const NOW=[["Ialoc","Bucharest, RO"],["Pizza 5 Colțuri","Arad, RO"],["Craft Ice","Bucharest, RO"],["IOTA Association","Bucharest, RO"],["Megamontaj","Târgu Mureș, RO"],["Fufu Bakerhouse","Amsterdam, NL"]];
+const NOW=[["Ialoc","Rebrand"],["Pizza 5 Colțuri","Rebrand"],["Craft Ice","Rebrand"],["IOTA Association","Web Development"],["Megamontaj","Rebrand"],["Fufu Bakerhouse","Branding"]];
 const li=([n,w])=>`<li>${n}, <span class="hl-where">${w}</span></li>`;
 function renderLists(){
   document.querySelectorAll(".hl-projects").forEach(pl=>pl.innerHTML=CLIENTS.map(li).join(""));
