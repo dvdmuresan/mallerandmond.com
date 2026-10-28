@@ -14,12 +14,11 @@ const P = [
    desc:"Ryu Sando Bar is an Asian restaurant specialising in sandos, Japanese sandwiches made with milk bread. It was founded by Daniel Timariu, who opened it in February 2026. He is passionate about Japanese culture and wanted a menu inspired by Japan without being strictly traditional, which is captured in the slogan “Japanese inspired, but not Japanese.” The launch was a real success. During Bucharest Food Week, Ryu had the second-highest number of reservations of any restaurant in the city.",approach:"Studio Maller created the brand identity and social media assets, and integrated the branding into the interior, which was designed by En Place Studio. The challenge was to build an identity urban and fresh enough for the city, yet still rooted in Japanese tradition. The palette is mainly red and white, chosen to hold up in a darker, grungier space full of neon and textured surfaces.",
    coverVideo:"projects/ryu/01-ryu-poster-motion.mp4",coverPoster:"projects/ryu/01-ryu-poster-motion-poster.jpg",cover:"projects/ryu/02-new-menu-incoming.webp",
    media:[
-    {src:"projects/ryu/01-ryu-poster-motion.mp4",poster:"projects/ryu/01-ryu-poster-motion-poster.jpg",w:1080,h:1440,video:1},{src:"projects/ryu/02-new-menu-incoming.webp",w:1500,h:2000},
+    {src:"projects/ryu/01-ryu-poster-motion.mp4",poster:"projects/ryu/01-ryu-poster-motion-poster.jpg",w:1080,h:1440,video:1},{src:"projects/ryu/02-new-menu-incoming.webp",w:1500,h:2000},{src:"projects/ryu/15-ryu-sando-bar.mp4",w:1024,h:576,video:1},
     {src:"projects/ryu/03-card-and-boxes.jpg",w:2000,h:1236},
     {src:"projects/ryu/04-chai-sakura-cheesecake.webp",w:1500,h:2000},{src:"projects/ryu/07-sandos.webp",w:1333,h:2000},{src:"projects/ryu/06-cheese-pull.jpg",w:1222,h:2000},{src:"projects/ryu/05-midori-bowl.webp",w:1500,h:2000},
     {src:"projects/ryu/09-drinks-menu-spread.jpg",w:2000,h:1168},
     {src:"projects/ryu/08-menu-reading.webp",w:1540,h:2000},{src:"projects/ryu/10-menu-26-drinks.jpg",w:1497,h:2000},{src:"projects/ryu/11-signatures.webp",w:1500,h:2000},{src:"projects/ryu/12-ryu-in-store.mp4",w:576,h:1024,video:1},{src:"projects/ryu/13-tshirt.jpg",w:1400,h:2000},{src:"projects/ryu/14-normal-never-makes-history.webp",w:1500,h:2000},
-    {src:"projects/ryu/15-ryu-sando-bar.mp4",w:1024,h:576,video:1},
     {src:"projects/ryu/16-katsusando-illustration.jpg",w:2000,h:1135}
    ]},
   {slug:"brue",title:"BRUE Specialty Coffee",studio:"Maller",year:"2026",category:"Specialty Coffee",services:"Brand Identity",location:"Arad",client:"",team:"",pal:["#16307f","#f2efe9","#3b2a24"],
