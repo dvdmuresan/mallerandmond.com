@@ -118,7 +118,7 @@ function paintHome(color){const nb=bgs[bgi^1];nb.style.backgroundColor=color;nb.
   document.body.classList.toggle("on-dark",!color||isDark(color))}
 /* projects still in progress: edit this list (shown under "Working on right now" at the bottom of Work and About) */
 const CLIENTS=[["Marty Restaurants","Romania"],["Liszt Ferenc Music Academy","Budapest"],["Olivo Bistro","Romania"],["House of Music","Budapest"],["Olivo Coffee Culture","Romania"],["Narcoffee","Romania"],["GoHome","Netherlands"],["Hirsch-Porozel","Romania"]];
-const NOW=[["Ia loc","Romania"],["IOTA Association","Romania"],["Megamontaj","Romania"],["Fufu Bakerhouse","Netherlands"]];
+const NOW=[["Ialoc Rebrand","Bucharest"],["Pizza 5 Colțuri Rebrand","Arad"],["Craft Ice Rebrand","Bucharest"],["IOTA Association","Romania"],["Megamontaj","Romania"],["Fufu Bakerhouse","Netherlands"]];
 const li=([n,w])=>`<li>${n}, <span class="hl-where">${w}</span></li>`;
 function renderLists(){
   document.querySelectorAll(".hl-projects").forEach(pl=>pl.innerHTML=CLIENTS.map(li).join(""));
