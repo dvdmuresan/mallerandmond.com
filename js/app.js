@@ -2,7 +2,7 @@
 /* project data lives in js/projects.js */
 /* work mosaic: two packed columns; [project index, aspect] or {pair:[[i,ar],[i,ar]]} = two small pieces on a grey ground */
 const W = {
-  cols:[[[0,"4/5"],[3,"1/1"],[5,"4/5"]],[[2,"4/5"],[7,"4/5"],[8,"1/1"]],[[6,"16/9"],[1,"1/1"],[4,"4/5"]]]
+  cols:[[[0,"4/5"],[3,"1/1"],[5,"16/9"]],[[2,"4/5"],[7,"4/5"],[8,"1/1"]],[[6,"16/9"],[1,"1/1"],[4,"4/5"]]]
 };
 /* project mosaic: two packed columns of different heights, plus a full-width closer.
    Strings are aspect ratios; {pair} = two small pieces set on a grey ground. */
