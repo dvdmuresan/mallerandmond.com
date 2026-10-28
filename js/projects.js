@@ -16,7 +16,7 @@ const P = [
    media:[
     {src:"projects/ryu/01-ryu-poster-motion.mp4",poster:"projects/ryu/01-ryu-poster-motion-poster.jpg",w:1080,h:1440,video:1},{src:"projects/ryu/02-new-menu-incoming.webp",w:1500,h:2000},
     {src:"projects/ryu/03-card-and-boxes.jpg",w:2000,h:1236},
-    {src:"projects/ryu/04-chai-sakura-cheesecake.webp",w:1500,h:2000},{src:"projects/ryu/05-midori-bowl.webp",w:1500,h:2000},{src:"projects/ryu/06-cheese-pull.jpg",w:1222,h:2000},{src:"projects/ryu/07-sandos.webp",w:1333,h:2000},
+    {src:"projects/ryu/04-chai-sakura-cheesecake.webp",w:1500,h:2000},{src:"projects/ryu/07-sandos.webp",w:1333,h:2000},{src:"projects/ryu/06-cheese-pull.jpg",w:1222,h:2000},{src:"projects/ryu/05-midori-bowl.webp",w:1500,h:2000},
     {src:"projects/ryu/09-drinks-menu-spread.jpg",w:2000,h:1168},
     {src:"projects/ryu/08-menu-reading.webp",w:1540,h:2000},{src:"projects/ryu/10-menu-26-drinks.jpg",w:1497,h:2000},{src:"projects/ryu/11-signatures.webp",w:1500,h:2000},{src:"projects/ryu/12-ryu-in-store.mp4",w:576,h:1024,video:1},{src:"projects/ryu/13-tshirt.jpg",w:1400,h:2000},{src:"projects/ryu/14-normal-never-makes-history.webp",w:1500,h:2000},
     {src:"projects/ryu/15-ryu-sando-bar.mp4",w:1024,h:576,video:1},
