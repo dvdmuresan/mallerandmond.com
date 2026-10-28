@@ -223,6 +223,7 @@ function show(route){if(!route||route==="home")route="work"; /* landing disabled
     renderedViews.add(key);
   }
   document.body.dataset.view=key;
+  const bs=document.body.style;if(p){bs.setProperty("--foot-bg",p.pal[0]);bs.setProperty("--foot-ink",isDark(p.pal[0])?"#ffffff":"#111111")}else{bs.removeProperty("--foot-bg");bs.removeProperty("--foot-ink")}
   document.querySelectorAll(".view").forEach(v=>v.hidden=v.id!=="v-"+key);
   if(p&&vp.dataset.project!==p.slug){renderProject(p);vp.dataset.project=p.slug}
   document.querySelectorAll(".nav a").forEach(a=>{const on=a.dataset.route===(p?"work":key);on?a.setAttribute("aria-current","page"):a.removeAttribute("aria-current")});
