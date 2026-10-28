@@ -214,7 +214,7 @@ const curtain=document.getElementById("curtain");
 const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
 let current=null,busy=false,queuedRoute=null;
 const renderedViews=new Set();
-function show(route){
+function show(route){if(!route||route==="home")route="work"; /* landing disabled for now: Work is the home page */
   const p=P.find(x=>x.slug===route);
   const key=p?"project":(["work","about","contact"].includes(route)?route:"home");
   if(!renderedViews.has(key)){
@@ -282,7 +282,7 @@ const COMBOS=[["#c8c5fb","#291811"],["#ea4c27","#b49d84"],["#291811","#c8c5fb"],
 let comboI=-1;
 function paint(route){comboI=(comboI+1+Math.floor(Math.random()*(COMBOS.length-1)))%COMBOS.length;const [bg,ink]=COMBOS[comboI];curtain.style.setProperty("--cur-bg",bg);curtain.style.setProperty("--cur-ink",ink)}
 async function go(route,push=true){
-  route=P.some(p=>p.slug===route)||["home","work","about","contact"].includes(route)?route:"home";
+  route=P.some(p=>p.slug===route)||["work","about","contact"].includes(route)?route:"work";
   if(busy){queuedRoute={route,push};return}
   if(route===current)return;
   busy=true;
