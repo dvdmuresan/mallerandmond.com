@@ -209,9 +209,8 @@ a.next:hover b{background:var(--flash);border-radius:var(--r)}
 @media (max-width:900px){
   .field{grid-template-columns:repeat(4,minmax(0,1fr))}.tile{--S:15vw}.about{grid-template-columns:1fr}.why,.joke{margin-left:calc(32px + (100% - 36px) * .4)}}
 @media (max-width:520px){.why,.joke{margin-left:0}}
-#v-about .hlist{margin-left:calc((100% - 100px) * .375 + 188px)}
-@media (max-width:900px){#v-about .hlist{margin-left:0}}
-@media (max-width:520px){#v-about .hlist{margin-left:0}}
+#v-about .hlist{grid-column:2;grid-row:2;align-self:end;margin-top:0}
+@media (max-width:900px){#v-about .hlist{grid-column:1;grid-row:auto;margin-top:clamp(40px,8vw,80px)}}
 @media (max-width:520px){.studio-card{grid-template-columns:1fr}}
 .page{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:var(--pad)}
 .page .lead{grid-column:1/10;padding:0 0 clamp(20px,4vw,48px)}
